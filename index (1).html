@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>متجر الأسطورة</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Cairo;}
+body{background:#0a0a0f;color:white}
+
+/* HEADER */
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:20px 40px;
+background:#111;
+position:sticky;
+top:0;
+z-index:9999;
+}
+
+.logo{
+font-size:24px;
+color:#00f7ff;
+font-weight:bold;
+}
+
+.cart{
+position:relative;
+font-size:24px;
+cursor:pointer;
+}
+
+.cart-count{
+position:absolute;
+top:-8px;
+right:-8px;
+background:#ff0080;
+width:22px;
+height:22px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:12px;
+}
+
+/* CART */
+.cart-popup{
+position:absolute;
+top:45px;
+right:0;
+background:#111;
+padding:15px;
+border-radius:15px;
+width:340px;
+display:none;
+box-shadow:0 0 15px #00f7ff33;
+font-size:14px;
+}
+
+.cart-item{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:10px;
+border-bottom:1px solid #222;
+padding-bottom:6px;
+}
+
+.qty-control{
+display:flex;
+align-items:center;
+gap:6px;
+}
+
+.qty-control button{
+background:#00f7ff;
+border:none;
+padding:2px 8px;
+border-radius:5px;
+cursor:pointer;
+color:black;
+font-weight:bold;
+}
+
+.remove-btn{
+background:red;
+border:none;
+color:white;
+padding:2px 6px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.cart-total{
+margin-top:10px;
+font-weight:bold;
+color:#00f7ff;
+text-align:center;
+}
+
+/* PRODUCTS */
+.products{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:30px;
+padding:40px;
+}
+
+.card{
+background:#111;
+padding:20px;
+border-radius:15px;
+text-align:center;
+}
+
+.card img{
+width:100%;
+border-radius:10px;
+margin-bottom:10px;
+}
+
+.price{color:#00f7ff;margin-bottom:10px}
+
+.btn{
+background:linear-gradient(45deg,#00f7ff,#ff00c8);
+border:none;
+padding:10px 20px;
+border-radius:25px;
+color:white;
+cursor:pointer;
+margin-top:10px;
+}
+
+/* ORDER */
+.popup{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#000000cc;
+display:none;
+justify-content:center;
+align-items:center;
+z-index:20000;
+}
+
+.popup-content{
+background:#111;
+padding:25px;
+border-radius:15px;
+width:95%;
+max-width:450px;
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.summary-box{
+background:#1a1a1a;
+padding:10px;
+border-radius:10px;
+max-height:150px;
+overflow:auto;
+font-size:14px;
+}
+
+.popup input,.popup select{
+padding:10px;
+border-radius:8px;
+border:none;
+background:#1a1a1a;
+color:white;
+}
+
+/* SUCCESS SIMPLE */
+.success{
+position:fixed;
+bottom:20px;
+right:20px;
+background:#00c853;
+padding:15px 25px;
+border-radius:10px;
+display:none;
+z-index:30000;
+}
+
+</style>
+</head>
+<body>
+
+<header>
+<div class="logo">⚡ متجر الأسطورة</div>
+<div class="cart" onclick="toggleCart()">
+🛒
+<div class="cart-count" id="cartCount">0</div>
+<div class="cart-popup" id="cartPopup"></div>
+</div>
+</header>
+
+<section class="products" id="products"></section>
+
+<div style="text-align:center;margin-bottom:40px;">
+<button class="btn" onclick="openOrder()">إتمام الطلب</button>
+</div>
+
+<!-- ORDER -->
+<div class="popup" id="popup">
+<div class="popup-content">
+<h3>ملخص الطلب</h3>
+<div class="summary-box" id="summary"></div>
+
+<input id="name" placeholder="الاسم الكامل">
+<input id="phone" placeholder="رقم الهاتف">
+
+<select id="state">
+<option value="">اختر الولاية</option>
+<option>أدرار</option><option>الشلف</option><option>الأغواط</option>
+<option>أم البواقي</option><option>باتنة</option><option>بجاية</option>
+<option>بسكرة</option><option>بشار</option><option>البليدة</option>
+<option>البويرة</option><option>تمنراست</option><option>تبسة</option>
+<option>تلمسان</option><option>تيارت</option><option>تيزي وزو</option>
+<option>الجزائر</option><option>الجلفة</option><option>جيجل</option>
+<option>سطيف</option><option>سعيدة</option><option>سكيكدة</option>
+<option>سيدي بلعباس</option><option>عنابة</option><option>قالمة</option>
+<option>قسنطينة</option><option>المدية</option><option>مستغانم</option>
+<option>المسيلة</option><option>معسكر</option><option>ورقلة</option>
+<option>وهران</option><option>البيض</option><option>إليزي</option>
+<option>برج بوعريريج</option><option>بومرداس</option><option>الطارف</option>
+<option>تندوف</option><option>تيسمسيلت</option><option>الوادي</option>
+<option>خنشلة</option><option>سوق أهراس</option><option>تيبازة</option>
+<option>ميلة</option><option>عين الدفلى</option><option>النعامة</option>
+<option>عين تموشنت</option><option>غرداية</option><option>غليزان</option>
+<option>تيميمون</option><option>برج باجي مختار</option>
+<option>أولاد جلال</option><option>بني عباس</option>
+<option>إن صالح</option><option>إن قزام</option>
+<option>تقرت</option><option>جانت</option>
+<option>المغير</option><option>المنيعة</option>
+</select>
+
+<button class="btn" onclick="sendOrder()">إرسال الطلب</button>
+<button class="btn" onclick="closeOrder()">إلغاء</button>
+</div>
+</div>
+
+<div class="success" id="successBox">
+تم إرسال الطلب بنجاح ✅
+</div>
+
+<script>
+
+const botToken="8383343429:AAFTXmsuKuYRARDph1kne25Aa_1T53jzTDg";
+const chatId="6403806024";
+
+const products=[
+{name:"منتج احترافي",price:2500,img:"https://picsum.photos/300?1"},
+{name:"منتج فاخر",price:3200,img:"https://picsum.photos/300?2"},
+{name:"منتج أسطوري",price:4100,img:"https://picsum.photos/300?3"},
+{name:"منتج ذهبي",price:2800,img:"https://picsum.photos/300?4"},
+{name:"منتج مميز",price:3500,img:"https://picsum.photos/300?5"}
+];
+
+let cart={};
+
+const productsDiv=document.getElementById("products");
+
+products.forEach(p=>{
+productsDiv.innerHTML+=`
+<div class="card">
+<img src="${p.img}">
+<h3>${p.name}</h3>
+<div class="price">${p.price} DA</div>
+<button class="btn" onclick="addToCart('${p.name}',${p.price})">أضف للسلة</button>
+</div>`;
+});
+
+function addToCart(name,price){
+if(cart[name]) cart[name].qty++;
+else cart[name]={price:price,qty:1};
+updateCart();
+}
+
+function updateCart(){
+const popup=document.getElementById("cartPopup");
+popup.innerHTML="";
+let total=0;
+let count=0;
+
+for(let item in cart){
+let itemTotal=cart[item].price*cart[item].qty;
+total+=itemTotal;
+count+=cart[item].qty;
+
+popup.innerHTML+=`
+<div class="cart-item">
+<div>${item}<br>${itemTotal} DA</div>
+<div class="qty-control">
+<button onclick="changeQty('${item}',-1)">-</button>
+<span>${cart[item].qty}</span>
+<button onclick="changeQty('${item}',1)">+</button>
+<button class="remove-btn" onclick="removeItem('${item}')">X</button>
+</div>
+</div>`;
+}
+
+if(count===0){
+popup.innerHTML="السلة فارغة";
+}else{
+popup.innerHTML+=`<div class="cart-total">المجموع: ${total} DA</div>`;
+}
+
+document.getElementById("cartCount").innerText=count;
+}
+
+function changeQty(item,value){
+cart[item].qty+=value;
+if(cart[item].qty<=0) delete cart[item];
+updateCart();
+}
+
+function removeItem(item){
+delete cart[item];
+updateCart();
+}
+
+function toggleCart(){
+const popup=document.getElementById("cartPopup");
+popup.style.display= popup.style.display==="block"?"none":"block";
+}
+
+function openOrder(){
+if(Object.keys(cart).length===0){alert("السلة فارغة");return;}
+
+let text="";
+let total=0;
+
+for(let item in cart){
+let itemTotal=cart[item].price*cart[item].qty;
+total+=itemTotal;
+text+=`${item} (${cart[item].qty}) - ${itemTotal} DA<br>`;
+}
+
+text+=`<hr>المجموع: ${total} DA`;
+document.getElementById("summary").innerHTML=text;
+document.getElementById("popup").style.display="flex";
+}
+
+function closeOrder(){
+document.getElementById("popup").style.display="none";
+}
+
+function sendOrder(){
+const name=document.getElementById("name").value;
+const phone=document.getElementById("phone").value;
+const state=document.getElementById("state").value;
+
+if(!name||!phone||!state){alert("أكمل المعلومات");return;}
+
+let items="";
+let total=0;
+
+for(let item in cart){
+let itemTotal=cart[item].price*cart[item].qty;
+total+=itemTotal;
+items+=`${item} x ${cart[item].qty} = ${itemTotal} DA%0A`;
+}
+
+fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=طلب جديد%0A${items}%0Aالمجموع: ${total} DA%0Aالاسم: ${name}%0Aالهاتف: ${phone}%0Aالولاية: ${state}`)
+.then(()=>{
+document.getElementById("popup").style.display="none";
+document.getElementById("successBox").style.display="block";
+setTimeout(()=>document.getElementById("successBox").style.display="none",3000);
+cart={};
+updateCart();
+});
+}
+
+</script>
+
+</body>
+</html>
